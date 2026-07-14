@@ -1,0 +1,2 @@
+ALTER TABLE "UserSetting" ADD COLUMN "theme" TEXT NOT NULL DEFAULT 'light';
+ALTER TABLE "UserSetting" ADD COLUMN "accentColor" TEXT NOT NULL DEFAULT '#1f9d8a';

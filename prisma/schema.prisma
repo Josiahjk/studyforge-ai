@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String
+  passwordHash  String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  decks         Deck[]
+  reviewLogs    ReviewLog[]
+  quizAttempts  QuizAttempt[]
+  tutorThreads  TutorThread[]
+  shareLinks    ShareLink[]
+  badges        Badge[]
+  aiRequestLogs AiRequestLog[]
+  uploadedFiles UploadedFile[]
+  stats         UserStats?
+  setting       UserSetting?
+}
+
+model UserStats {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  streak        Int       @default(0)
+  xp            Int       @default(0)
+  level         Int       @default(1)
+  dailyGoal     Int       @default(20)
+  dailyReviewed Int       @default(0)
+  accuracyAvg   Float     @default(0)
+  lastStudiedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSetting {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  aiModelMode   String   @default("auto-free")
+  manualModel   String?
+  theme         String   @default("light")
+  accentColor   String   @default("#1f9d8a")
+  studyLanguage String   @default("en")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Deck {
+  id           String        @id @default(cuid())
+  userId       String
+  title        String
+  description  String        @default("")
+  subject      String        @default("General")
+  tagsJson     String        @default("[]")
+  color        String        @default("#1f9d8a")
+  isPublic     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards        Card[]
+  reviewLogs   ReviewLog[]
+  quizAttempts QuizAttempt[]
+  shareLinks   ShareLink[]
+
+  @@index([userId])
+}
+
+model Card {
+  id            String      @id @default(cuid())
+  deckId        String
+  type          String      @default("qa")
+  question      String
+  answer        String
+  clozeText     String?
+  optionsJson   String?
+  correctOption Int?
+  explanation   String?
+  difficulty    String      @default("medium")
+  tagsJson      String      @default("[]")
+  dueAt         DateTime    @default(now())
+  easeFactor    Float       @default(2.5)
+  interval      Int         @default(0)
+  repetitions   Int         @default(0)
+  lapses        Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deck          Deck        @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  reviewLogs    ReviewLog[]
+
+  @@index([deckId])
+  @@index([dueAt])
+}
+
+model ReviewLog {
+  id               String   @id @default(cuid())
+  userId           String
+  deckId           String
+  cardId           String
+  rating           String
+  correct          Boolean
+  previousEase     Float
+  newEase          Float
+  previousInterval Int
+  newInterval      Int
+  reviewedAt       DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deck             Deck     @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  card             Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([userId, reviewedAt])
+  @@index([deckId])
+}
+
+model QuizAttempt {
+  id            String   @id @default(cuid())
+  userId        String
+  deckId        String?
+  score         Int
+  total         Int
+  questionsJson String
+  answersJson   String
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deck          Deck?    @relation(fields: [deckId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
+
+model TutorThread {
+  id        String         @id @default(cuid())
+  userId    String
+  title     String         @default("Tutor session")
+  subject   String         @default("General")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  TutorMessage[]
+
+  @@index([userId])
+}
+
+model TutorMessage {
+  id        String      @id @default(cuid())
+  threadId  String
+  role      String
+  content   String
+  createdAt DateTime    @default(now())
+  thread    TutorThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+}
+
+model ShareLink {
+  id        String    @id @default(cuid())
+  userId    String
+  deckId    String
+  token     String    @unique
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deck      Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
+
+  @@index([deckId])
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  userId      String
+  code        String
+  label       String
+  description String
+  awardedAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, code])
+}
+
+model AiRequestLog {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, endpoint, createdAt])
+}
+
+model UploadedFile {
+  id           String          @id @default(cuid())
+  userId       String
+  originalName String
+  mimeType     String
+  extension    String
+  size         Int
+  status       String          @default("parsed")
+  warning      String?
+  createdAt    DateTime        @default(now())
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chunks       DocumentChunk[]
+  generations  GeneratedNote[]
+  images       DocumentImage[]
+
+  @@index([userId, createdAt])
+}
+
+model DocumentChunk {
+  id          String       @id @default(cuid())
+  fileId      String
+  chunkIndex  Int
+  pageNumber  Int?
+  slideNumber Int?
+  startSeconds Float?
+  endSeconds   Float?
+  heading     String?
+  rawText     String
+  cleanedText String
+  createdAt   DateTime     @default(now())
+  file        UploadedFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([fileId, chunkIndex])
+}
+
+model DocumentImage {
+  id          String       @id @default(cuid())
+  fileId      String
+  imageIndex  Int
+  pageNumber  Int?
+  timestampSeconds Float?
+  contentType String
+  dataUrl     String
+  altText     String?
+  createdAt   DateTime     @default(now())
+  file        UploadedFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([fileId, imageIndex])
+  @@index([fileId, pageNumber])
+}
+
+model GeneratedNote {
+  id             String       @id @default(cuid())
+  fileId         String
+  documentTitle  String
+  shortSummary   String
+  notesJson      String
+  flashcardsJson String
+  quizJson       String
+  createdAt      DateTime     @default(now())
+  file           UploadedFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([fileId, createdAt])
+}

@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7fbf8;
+  --foreground: #12201c;
+  --accent-color: #1f9d8a;
+  --accent-bg: #1f9d8a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-coral-100: #ffe8df;
+  --color-coral-900: #7a2e1d;
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: "Cascadia Code", Consolas, "Courier New", monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: #b8f3df;
+  color: #12201c;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-in {
+  animation: page-in 180ms ease-out both;
+}
+
+.studyforge-primary {
+  background: var(--accent-bg, #1f9d8a) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+.studyforge-primary:focus-visible {
+  outline-color: var(--accent-color, #1f9d8a);
+}
+
+.studyforge-shell {
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
+}
+
+.theme-rainbow .studyforge-primary {
+  background-size: 180% 180%;
+  animation: rainbow-shift 8s ease infinite;
+}
+
+@keyframes rainbow-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.theme-dark {
+  --background: #0f172a;
+  --foreground: #e5edf7;
+  color-scheme: dark;
+}
+
+.theme-dark .bg-white,
+.theme-dark .bg-white\/90 {
+  background-color: #111827 !important;
+}
+
+.theme-dark .bg-slate-50,
+.theme-dark .bg-slate-100 {
+  background-color: #1f2937 !important;
+}
+
+.theme-dark .bg-emerald-50 {
+  background-color: #052e2b !important;
+}
+
+.theme-dark .border-emerald-200 {
+  border-color: #0f766e !important;
+}
+
+.theme-dark .text-emerald-950,
+.theme-dark .text-emerald-900,
+.theme-dark .text-emerald-800 {
+  color: #a7f3d0 !important;
+}
+
+.theme-dark .hover\:bg-slate-50:hover,
+.theme-dark .hover\:bg-slate-100:hover {
+  background-color: #243244 !important;
+}
+
+.theme-dark .border-slate-100,
+.theme-dark .border-slate-200,
+.theme-dark .ring-slate-200 {
+  border-color: #334155 !important;
+}
+
+.theme-dark .ring-slate-200 {
+  --tw-ring-color: #334155 !important;
+}
+
+.theme-dark .text-slate-950,
+.theme-dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.theme-dark .text-slate-800,
+.theme-dark .text-slate-700,
+.theme-dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+.theme-dark .text-slate-500,
+.theme-dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+.theme-dark input,
+.theme-dark textarea,
+.theme-dark select {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.theme-dark input::placeholder,
+.theme-dark textarea::placeholder {
+  color: #64748b;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

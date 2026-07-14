@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: file:./dev.db
+      NEXT_PUBLIC_APP_NAME: StudyForge AI
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      SITE_URL: http://localhost:3000
+      SESSION_SECRET: ci-only-placeholder-not-for-production
+      OPENROUTER_FREE_ONLY: true
+      TRANSCRIPTION_SERVICE_URL: http://127.0.0.1:8001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run lint
+      - run: npm run build
