@@ -14,7 +14,7 @@ StudyForge AI is a full-stack learning website for creating flashcards and quizz
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 22.13 or newer
 - npm
 - Python 3.10 or newer, FFmpeg, and `yt-dlp` only when local media transcription is needed
 - An OpenRouter API key only when AI features are needed
