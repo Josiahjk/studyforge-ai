@@ -1,0 +1,2 @@
+# Python dependencies for the optional transcription service.
+-r services/transcription/requirements.txt

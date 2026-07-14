@@ -101,11 +101,18 @@ StudyForge AI is a full-stack learning website for creating flashcards and quizz
 
 The Python service is required only for local audio/video transcription and YouTube videos without usable captions.
 
+From the repository root, install its Python dependencies with:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Then start the service:
+
 ```powershell
 cd services/transcription
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
 uvicorn main:app --host 127.0.0.1 --port 8001
 ```
 
